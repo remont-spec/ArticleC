@@ -232,7 +232,7 @@ export default function App() {
           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
             <FileText size={24} />
           </div>
-          <h1 className="font-bold text-xl text-slate-800 tracking-tight">ArticleC</h1>
+          <h1 className="font-semibold text-xl text-slate-800 tracking-tight">ArticleC</h1>
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-1">
@@ -313,7 +313,7 @@ export default function App() {
               className="max-w-4xl mx-auto space-y-8"
             >
               <header>
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Напишете Вашата Статия</h2>
+                <h2 className="text-3xl font-semibold text-slate-900 mb-2">Напишете Вашата Статия</h2>
                 <p className="text-slate-500">Използвайте изкуствен интелект за създаване на качествено съдържание.</p>
               </header>
 
@@ -558,7 +558,7 @@ export default function App() {
             >
               <header className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-3xl font-bold text-slate-900 mb-2">Архив на статиите</h2>
+                  <h2 className="text-3xl font-semibold text-slate-900 mb-2">Архив на статиите</h2>
                   <p className="text-slate-500">Вашият списък от генерирани и запазени версии.</p>
                 </div>
               </header>
@@ -613,7 +613,7 @@ export default function App() {
             >
               <header className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-3xl font-bold text-slate-900 mb-2">Проверка & Анализ</h2>
+                  <h2 className="text-3xl font-semibold text-slate-900 mb-2">Проверка & Анализ</h2>
                   <p className="text-slate-500">Проверете Вашата статия за фактологични грешки, SEO и граматика.</p>
                 </div>
                 {currentArticle && (
@@ -652,7 +652,7 @@ export default function App() {
                   <div className="col-span-1 space-y-6">
                     <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm relative overflow-hidden">
                       <div className="absolute top-0 left-0 w-full h-1 bg-blue-600"></div>
-                      <p className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wider">Качество & SEO</p>
+                      <p className="text-sm font-semibold text-slate-500 mb-4 tracking-wider">Качество & SEO</p>
                       <div className="relative w-32 h-32 mx-auto mb-4">
                         <svg className="w-full h-full transform -rotate-90">
                           <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
