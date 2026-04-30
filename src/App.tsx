@@ -225,7 +225,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-slate-50 overflow-hidden" style={{ textTransform: 'none' }}>
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
         <div className="p-6 border-bottom border-slate-100 flex items-center gap-3">
@@ -357,14 +357,17 @@ export default function App() {
                   </div>
                 </div>
 
-                <button 
-                  onClick={handleGenerate}
-                  disabled={isGenerating || !prompt}
-                  className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-100"
-                >
-                  {isGenerating ? <Loader2 size={24} className="animate-spin" /> : <PlusCircle size={20} />}
-                  Генерирай Статия
-                </button>
+                  <button 
+                    onClick={handleGenerate}
+                    disabled={isGenerating || !prompt}
+                    className={cn(
+                      "w-full py-4 bg-blue-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-100",
+                      "normal-case"
+                    )}
+                  >
+                    {isGenerating ? <Loader2 size={24} className="animate-spin" /> : <PlusCircle size={20} />}
+                    {isGenerating ? "Генериране..." : "Генерирай Статия"}
+                  </button>
               </div>
 
               {currentArticle && (
@@ -641,7 +644,7 @@ export default function App() {
                   <button 
                     onClick={() => handleAnalyze(manualText)}
                     disabled={isAnalyzing || !manualText}
-                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-blue-600 text-white rounded-2xl font-semibold flex items-center justify-center gap-3 hover:bg-blue-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed normal-case"
                   >
                     {isAnalyzing ? <Loader2 size={24} className="animate-spin" /> : <ShieldCheck size={24} />}
                     Анализирай и провери за грешки
@@ -721,7 +724,7 @@ export default function App() {
                          <div className="flex flex-col items-center justify-center h-full text-center">
                           <button 
                             onClick={() => handleAnalyze()}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all font-mono"
+                            className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold flex items-center gap-2 hover:bg-blue-700 transition-all font-mono"
                           >
                            Провери текущата статия
                           </button>
