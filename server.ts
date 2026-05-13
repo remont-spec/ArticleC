@@ -5,6 +5,7 @@ import multer from "multer";
 import mammoth from "mammoth";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
+import axios from "axios";
 
 const require = createRequire(import.meta.url);
 const pdf = require("pdf-parse");
@@ -19,6 +20,96 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json({ limit: '10mb' }));
+
+  // WordPress Proxy to handle CORS and authorization more reliably
+  app.post("/api/wp/create-post", async (req, res) => {
+    const { baseUrl, username, appPassword, postData } = req.body;
+
+    if (!baseUrl || !username || !appPassword || !postData) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    try {
+      const authHeader = Buffer.from(`${username}:${appPassword}`).toString("base64");
+      
+      const response = await axios.post(`${baseUrl}/wp-json/wp/v2/posts`, postData, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${authHeader}`
+        }
+      });
+
+      res.status(response.status).json(response.data);
+    } catch (error: any) {
+      console.error("WordPress Proxy Error:", error.response?.data || error.message);
+      
+      const status = error.response?.status || 500;
+      const message = error.response?.data?.message || error.message || "Failed to communicate with WordPress";
+      const code = error.response?.data?.code || "unknown_error";
+
+      res.status(status).json({ message, code, detail: error.response?.data });
+    }
+  });
+
+  // Proxy for fetching WordPress block patterns (both registered and user-created)
+  app.get("/api/wp/patterns", async (req, res) => {
+    const { baseUrl, username, appPassword, search } = req.query;
+
+    if (!baseUrl || !username || !appPassword) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    try {
+      const authHeader = Buffer.from(`${username}:${appPassword}`).toString("base64");
+      
+      // Fetch from two sources:
+      // 1. Registered Patterns (code/plugins)
+      // 2. User-created Blocks/Patterns (Database)
+      const [patternsRes, blocksRes] = await Promise.allSettled([
+        axios.get(`${baseUrl}/wp-json/wp/v2/block-patterns`, {
+          params: { search },
+          headers: { "Authorization": `Basic ${authHeader}` }
+        }),
+        axios.get(`${baseUrl}/wp-json/wp/v2/blocks`, {
+          params: { search },
+          headers: { "Authorization": `Basic ${authHeader}` }
+        })
+      ]);
+
+      let allPatterns: any[] = [];
+
+      const getString = (val: any): string => {
+        if (typeof val === 'string') return val;
+        if (!val) return '';
+        return val.rendered || val.raw || (typeof val === 'object' ? JSON.stringify(val) : String(val));
+      };
+
+      // Handle block-patterns (Registered)
+      if (patternsRes.status === 'fulfilled') {
+        allPatterns = [...allPatterns, ...patternsRes.value.data.map((p: any) => ({
+          name: p.name,
+          title: getString(p.title),
+          content: getString(p.content),
+          source: 'core'
+        }))];
+      }
+
+      // Handle blocks (User-created Synced Patterns)
+      if (blocksRes.status === 'fulfilled') {
+        allPatterns = [...allPatterns, ...blocksRes.value.data.map((b: any) => ({
+          name: `block-${b.id}`,
+          title: getString(b.title),
+          content: getString(b.content),
+          source: 'user'
+        }))];
+      }
+
+      res.status(200).json(allPatterns);
+    } catch (error: any) {
+      console.error("WordPress Patterns Error:", error.response?.data || error.message);
+      res.status(error.response?.status || 500).json(error.response?.data || { message: error.message });
+    }
+  });
 
   // API for extracting text from files
   app.post("/api/extract-text", upload.array("files"), async (req, res) => {
